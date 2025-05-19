@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Update</title>
+  <script>
+    async function updateOrderStatus() {
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get('orderId');
+      const status = params.get('status');
+
+      if (!orderId || !status) {
+        console.error("Missing orderId or status in URL");
+        return;
+      }
+
+      const endpoint = `https://xlw5-kd1n-crdj.n7c.xano.io/api:-VPGC53-/orders/${orderId}`;
+      const url = `${endpoint}?order_id=${orderId}&tracking_status=${encodeURIComponent(status)}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          window.close(); // Close the page if request is successful
+        } else {
+          console.error("Failed to update order. Status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error during request:", error);
+      }
+    }
+
+    window.onload = updateOrderStatus;
+  </script>
+</head>
+<body>
+  <p>Updating order status...</p>
+</body>
+</html>
