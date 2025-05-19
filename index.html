@@ -19,10 +19,11 @@
         const orderId = params.get('orderId');
         const status = params.get('status');
         const isKeepingOrder = params.get('isKeepingOrder');
+        const notificationsEnabled = params.get('notificationsEnabled');
 
         // Require orderId and at least one action param
-        if (!orderId || (!status && !isKeepingOrder)) {
-          console.error("Missing required parameters: orderId and either status or isKeepingOrder");
+        if (!orderId || (!status && !isKeepingOrder && !notificationsEnabled)) {
+          console.error("Missing required parameters: orderId and at least one of status, isKeepingOrder, or notificationsEnabled");
           return;
         }
 
@@ -31,6 +32,7 @@
         queryParams.append('order_id', orderId);
         if (status) queryParams.append('tracking_status', status);
         if (isKeepingOrder) queryParams.append('is_keeping_order', isKeepingOrder);
+        if (notificationsEnabled) queryParams.append('notifications_enabled', notificationsEnabled);
 
         const endpoint = `https://xlw5-kd1n-crdj.n7c.xano.io/api:-VPGC53-/orders/${orderId}`;
         const url = `${endpoint}?${queryParams.toString()}`;
