@@ -5,30 +5,45 @@
   <title>Order Update</title>
   <script>
     async function updateOrderStatus() {
-      const params = new URLSearchParams(window.location.search);
-      const orderId = params.get('orderId');
-      const status = params.get('status');
-
-      if (!orderId || !status) {
-        console.error("Missing orderId or status in URL");
-        return;
-      }
-
-      const endpoint = `https://xlw5-kd1n-crdj.n7c.xano.io/api:-VPGC53-/orders/${orderId}`;
-      const url = `${endpoint}?order_id=${orderId}&tracking_status=${encodeURIComponent(status)}`;
-
       try {
+        // Fetch API key from local JSON file
+        const credsResponse = await fetch('xano_api_creds.json');
+        if (!credsResponse.ok) throw new Error('Failed to load xano_api_creds.json');
+
+        const creds = await credsResponse.json();
+        const apiKey = creds.api_key;
+        if (!apiKey) throw new Error('Missing api_key in xano_api_creds.json');
+
+        // Extract orderId and status from URL
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get('orderId');
+        const status = params.get('status');
+
+        if (!orderId || !status) {
+          console.error("Missing orderId or status in URL");
+          return;
+        }
+
+        const endpoint = `https://xlw5-kd1n-crdj.n7c.xano.io/api:-VPGC53-/orders/${orderId}`;
+        const url = `${endpoint}?order_id=${orderId}&tracking_status=${encodeURIComponent(status)}`;
+
+        // Make the POST request
         const response = await fetch(url, {
-          method: 'POST'
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
         });
 
         if (response.ok) {
-          window.close(); // Close the page if request is successful
+          window.close();
         } else {
           console.error("Failed to update order. Status:", response.status);
         }
+
       } catch (error) {
-        console.error("Error during request:", error);
+        console.error("Error:", error);
       }
     }
 
